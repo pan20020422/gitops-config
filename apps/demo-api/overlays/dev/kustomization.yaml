@@ -5,7 +5,7 @@ resources:
 - ../../base
 images:
 - name: 192.168.118.100:30002/library/demo-api
-  newTag: v3
+  newTag: v1
 patches:
 - path: patch-resources.yaml
 - path: patch-ingress.yaml
