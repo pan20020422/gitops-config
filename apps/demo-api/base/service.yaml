@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-api
+spec:
+  selector:
+    app: demo-api
+  ports:
+  - name: http
+    port: 8080        # Service 端口，Ingress 指向这里
+    targetPort: 8080  # 容器端口
+

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-api-config
+data:
+  APP_ENV: "base"      # 各环境 overlay 里覆盖
+  LOG_LEVEL: "info"
+
