@@ -7,7 +7,7 @@ resources:
 - pdb.yaml
 images:
 - name: 192.168.118.100:30002/library/demo-api
-  newTag: v1.0.0       # dev 验证通过后手动改这里发布 prod
+  newTag: v6
 patches:
 - path: patch-resources.yaml
 - path: patch-ingress.yaml
