@@ -1,0 +1,11 @@
+.less-history-file:
+.search
+"nmcli
+"-E
+"-o
+"-w
+"-f
+"-F
+"NR
+"nf
+"-l

@@ -1,0 +1,33 @@
+grafana:
+  adminPassword: "Grafana12345"
+  service:
+    type: NodePort
+    nodePort: 30090
+alertmanager:
+  service:
+    type: NodePort
+    nodePort: 30093
+  config:
+    global:
+      resolve_timeout: 5m
+      smtp_smarthost: 'smtp.qq.com:587'
+      smtp_from: '2639721235@qq.com'
+      smtp_auth_username: '2639721235@qq.com'
+      smtp_auth_password: 'kzrvuwuvmtpbecia'
+      smtp_require_tls: true
+    route:
+      group_by: ['alertname', 'namespace']
+      group_wait: 30s          # 首次通知前等 30s，把同组告警合并
+      group_interval: 5m
+      repeat_interval: 4h      # 未恢复则每 4h 重复提醒
+      receiver: 'email-alert'
+      routes:
+      - receiver: 'null'       # Watchdog 是默认心跳规则，静音掉
+        matchers:
+        - alertname = "Watchdog"
+    receivers:
+    - name: 'null'
+    - name: 'email-alert'
+      email_configs:
+      - to: '2639721235@qq.com'
+        send_resolved: true    # 恢复时也发邮件，形成闭环

@@ -1,0 +1,12 @@
+expose:
+  type: nodePort
+  tls:
+    enabled: false
+  nodePort:
+    name: harbor
+    ports:
+      http:
+        port: 80
+        nodePort: 30002
+externalURL: http://192.168.118.100:30002
+harborAdminPassword: "Harbor12345"

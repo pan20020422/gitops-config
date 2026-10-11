@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dev
+resources:
+- ../../base
+images:
+- name: 192.168.118.100:30002/library/demo-api
+  newTag: v1.0.0       # Jenkins 自动改写这里（仅 dev）
+patches:
+- path: patch-resources.yaml
+- path: patch-ingress.yaml
+- path: patch-configmap.yaml
+

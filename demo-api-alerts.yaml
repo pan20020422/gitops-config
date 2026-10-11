@@ -1,0 +1,45 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: demo-api-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # ⚠️ 必须写！Prometheus 按 release 标签挑选规则，写错规则永不加载
+spec:
+  groups:
+  - name: demo-api.rules
+    rules:
+
+    # 规则1：业务 Deployment 无可用副本（触发方式最简单，用于验证链路）
+    - alert: DemoApiNoAvailableReplicas
+      expr: kube_deployment_status_replicas_available{namespace=~"dev|prod",deployment="demo-api"} == 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "demo-api 无可用副本 ({{ $labels.namespace }})"
+        description: "命名空间 {{ $labels.namespace }} 的 demo-api 已持续 1 分钟无可用 Pod，服务中断"
+
+    # 规则2：Pod 频繁重启（dev/prod 命名空间内所有 Pod）
+    - alert: PodCrashLooping
+      expr: increase(kube_pod_container_status_restarts_total{namespace=~"dev|prod"}[15m]) > 3
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod 频繁重启 ({{ $labels.namespace }}/{{$labels.pod }})"
+        description: "Pod {{ $labels.pod }} 在 15 分钟内重启超过 3 次，疑似 CrashLoop"
+
+    # 规则3：demo-api CPU 超过 limit 的 40%（与 HPA 阈值对齐，压测时联动触发）
+    - alert: DemoApiHighCPU
+      expr: |
+        sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace="prod",pod=~"demo-api.*",container="demo-api"}[2m]))
+        /
+        sum by (namespace, pod) (kube_pod_container_resource_limits{namespace="prod",pod=~"demo-api.*",container="demo-api",resource="cpu"})
+        > 0.4
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "demo-api CPU 过高 ({{ $labels.pod }})"
+        description: "Pod {{ $labels.pod }} CPU 使用率超过 limit 的 40% 持续 2 分钟，当前 {{$value | humanizePercentage }}"

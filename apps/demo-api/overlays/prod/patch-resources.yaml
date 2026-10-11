@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-api
+spec:
+  replicas: 3           # 首次部署生效，之后由 HPA 接管（配合 ignoreDifferences）
+  template:
+    spec:
+      containers:
+      - name: demo-api
+        resources:
+          requests: { cpu: 250m, memory: 256Mi }
+          limits:   { cpu: "1", memory: 1Gi }
